@@ -959,6 +959,7 @@ public final class String
     }
 
     /**
+     * String是重写了eauals方法的，循环判断了每个字符是否相等
      * Compares this string to the specified object.  The result is {@code
      * true} if and only if the argument is not {@code null} and is a {@code
      * String} object that represents the same sequence of characters as this
