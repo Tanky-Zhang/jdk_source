@@ -216,8 +216,10 @@ public class ReentrantLock implements Lock, java.io.Serializable {
 
     /**
      * Sync object for fair locks
+     * 公平锁实现
      */
     static final class FairSync extends Sync {
+
         private static final long serialVersionUID = -3000897897090466540L;
 
         final void lock() {
@@ -230,14 +232,19 @@ public class ReentrantLock implements Lock, java.io.Serializable {
          */
         protected final boolean tryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
+            //获取锁标记
             int c = getState();
+            //c==0代表没有线程获得锁
             if (c == 0) {
-                if (!hasQueuedPredecessors() &&
-                    compareAndSetState(0, acquires)) {
+                //!hasQueuedPredecessors()：看看队列中有没有在排队的线程
+                //compareAndSetState(0, acquires)：如果没有在排队的就将标志置为1（原子的）
+                if (!hasQueuedPredecessors() && compareAndSetState(0, acquires)) {
+                    //如果没有在排队的线程且将标志成功的置为1那么就设置同步器中的线程为当前线程（获得锁的线程）
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
+            //有线程已经获得锁执行了 且 执行中的线程是当前线程，那么将标志值+1，可重入的关键！！！！！
             else if (current == getExclusiveOwnerThread()) {
                 int nextc = c + acquires;
                 if (nextc < 0)

@@ -581,9 +581,12 @@ public abstract class AbstractQueuedSynchronizer
      * @return node's predecessor
      */
     private Node enq(final Node node) {
+        //死循环保证当前节点进入队列
         for (;;) {
             Node t = tail;
-            if (t == null) { // Must initialize
+            //如果尾节点还是空的，意味着还没有人排队（和前边的判断不冲突，在并发的情况下有可能队列中的线程刚好被唤醒执行），需要将一个空的Node节点放在尾节点的位置
+            if (t == null) {
+                // Must initialize
                 if (compareAndSetHead(new Node()))
                     tail = head;
             } else {
@@ -603,16 +606,22 @@ public abstract class AbstractQueuedSynchronizer
      * @return the new node
      */
     private Node addWaiter(Node mode) {
+
         Node node = new Node(Thread.currentThread(), mode);
-        // Try the fast path of enq; backup to full enq on failure
+        // Try the fast path of enq; backup to full enq on failure 尝试快速入队列，我理解在竞争不大的情况下可以成功
         Node pred = tail;
+        //pred==tail&& !=null
         if (pred != null) {
+            //让node的前置节点指向尾节点
             node.prev = pred;
+            //原子的将尾部节点更新为当前节点
             if (compareAndSetTail(pred, node)) {
+                //将尾节点的下一个节点指向当前节点
                 pred.next = node;
                 return node;
             }
         }
+        // backup to full enq on failure
         enq(node);
         return node;
     }
@@ -1195,8 +1204,8 @@ public abstract class AbstractQueuedSynchronizer
      *        can represent anything you like.
      */
     public final void acquire(int arg) {
-        if (!tryAcquire(arg) &&
-            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+        //尝试获取锁失败 然后就会去入队列
+        if (!tryAcquire(arg) && acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
             selfInterrupt();
     }
 
