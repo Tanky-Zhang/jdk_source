@@ -585,8 +585,7 @@ public abstract class AbstractQueuedSynchronizer
         for (;;) {
             Node t = tail;
             //如果尾节点还是空的，意味着还没有人排队（和前边的判断不冲突，在并发的情况下有可能队列中的线程刚好被唤醒执行），需要将一个空的Node节点放在尾节点的位置
-            if (t == null) {
-                // Must initialize
+            if (t == null) {// Must initialize
                 if (compareAndSetHead(new Node()))
                     tail = head;
             } else {
