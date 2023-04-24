@@ -1,6 +1,7 @@
 package demo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhangzhongguo
@@ -26,6 +27,12 @@ public class HashMapDemo {
 
         Integer a=8;
         a.equals(5);
+
+
+        ConcurrentHashMap map1=new ConcurrentHashMap();
+       // map1.put()
+
+
     }
 
 }

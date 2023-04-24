@@ -465,8 +465,8 @@ public interface Comparator<T> {
             Function<? super T, ? extends U> keyExtractor)
     {
         Objects.requireNonNull(keyExtractor);
-        return (Comparator<T> & Serializable)
-            (c1, c2) -> keyExtractor.apply(c1).compareTo(keyExtractor.apply(c2));
+        Comparator<T> tComparator = (c1, c2) -> keyExtractor.andThen(keyExtractor.apply(c1)::compareTo).apply(c2);
+        return tComparator;
     }
 
     /**
